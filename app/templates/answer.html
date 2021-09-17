@@ -1,0 +1,57 @@
+{% extends "template.html" %}
+{% block content %}
+<h2>{{ question.title}} </h2>
+<p> Asked by {{question.author}}</p>
+<div class="d-flex flex-row">
+    <div class="p-3">
+        <img role="button" onclick="question_vote(1)" src="/static/images/caret-up-fill.svg" alt="Bootstrap" width="32"
+            height="32">
+        <div class="text-center" id="question_vote">
+            {{ question.votes }}
+        </div>
+        <img role="button" onclick="question_vote(-1)" src="/static/images/caret-down-fill.svg" alt="Bootstrap"
+            width="32" height="32">
+    </div>
+    <div class="flex-grow-1">
+        <p class="card-text">{{question.detail}}</p>
+        <p class="card-text">
+            {% for tag in question.tags %}
+            <span class="badge bg-dark">{{tag}}</span>
+            {% endfor %}
+        </p>
+    </div>
+</div>
+
+<h2 class="mt-5">Answers</h2>
+
+{% for answer in answers %}
+<div class="d-flex flex-row">
+    <div class="p-3">
+        <img role="button" onclick="answer_vote({{answer.id}},1)" src="/static/images/caret-up-fill.svg" alt="Bootstrap"
+            width="32" height="32">
+        <div class="text-center" id="answer_vote_{{answer.id}}">
+            {{ answer.votes }}
+        </div>
+        <img role="button" onclick="answer_vote({{answer.id}},-1)" src="/static/images/caret-down-fill.svg"
+            alt="Bootstrap" width="32" height="32">
+    </div>
+    <div class="flex-grow-1">
+        <p class="card-text">{{answer.detail}}</p>
+    </div>
+</div>
+<div class="text-end"><small>Answered by {{answer.author}}</small></div>
+{% endfor %}
+
+<script src="/static/js/axios.min.js"></script>
+
+<script>
+    const elements = { "question_vote": document.getElementById("question_vote") };
+    function question_vote(value) {
+        axios.get(`/qvote/{{question.id}}/${value}`).then((response) => { elements.question_vote.innerHTML = response.data });
+    }
+    function answer_vote(answer_id, value) {
+        axios.get(`/avote/${answer_id}/${value}`).then((response) => { document.getElementById(`answer_vote_${answer_id}`).innerHTML = response.data });
+    }
+
+</script>
+{% endblock %}
