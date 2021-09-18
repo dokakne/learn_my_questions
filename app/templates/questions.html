@@ -51,24 +51,9 @@
 {% endfor %}
 
 <script src="/static/js/tinymce/tinymce.min.js"></script>
-
+<script src="/static/js/auth_guard.js"></script>
 <script>
-  axios
-    .get("/user", {
-      headers: { Authorization: `Bearer ${Cookies.get("email")}` },
-    })
-    .then((response) => {
-      if (response.data.email) {
-        set_user(response.data.email);
-        init();
-      } else {
-        window.location.href = "/login";
-      }
-    })
-    .catch((error) => {
-      window.location.href = "/login";
-    });
-
+  auth_guard(init);
   function init() {
     tinymce.init({
       selector: "#detail",
@@ -84,7 +69,7 @@
     axios
       .post("/question", {
         id: -1,
-        author: display_email.innerHTML,
+        author: current_user.email,
         detail: tinyMCE.get("detail").getContent(),
         tags: elements.tags.value.split(/\s+/),
         title: elements.title.value,

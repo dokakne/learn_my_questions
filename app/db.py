@@ -23,6 +23,7 @@ class User(BaseModel):
     id: int
     email: str
     password: str
+    name: str
 
 
 MEDIUM_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
@@ -31,7 +32,7 @@ SMALL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
 
 EMPTY_QUESTION = Question(id=-1, title="", detail="", author="")
 EMPTY_ANSWER = Answer(id=-1, question_id=-1, detail="", author="")
-EMPTY_USER = User(id=-1, email="", password="")
+EMPTY_USER = User(id=-1, email="", password="", name="")
 SAMPLE_QUESTION = Question(
     id=0,
     title=SMALL_TEXT,
@@ -121,17 +122,3 @@ def set_user(user: User):
 
 def get_user_from_email(email: str) -> User:
     return next((user for user in USERS if user.email == email), EMPTY_USER)
-
-
-def is_auth_user_password(email, password) -> bool:
-    return get_user_from_email(email).password == password
-
-
-def is_valid_user(email: str, password: str) -> None:
-    if is_auth_user_password(email, password):
-        return True
-    elif get_user_from_email(email).id == -1:
-        set_user(User(email=email, password=password, id=-1))
-        return True
-    else:
-        return False

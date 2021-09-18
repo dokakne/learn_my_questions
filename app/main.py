@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from . import db
+from . import db, auth
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -12,11 +12,6 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="html"), name="static")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    print(token)
-    return token if db.get_user_from_email(token).id > -1 else ""
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -31,7 +26,7 @@ def get_login():
 
 def get_cookied_response(email: str, password: str):
     response = RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-    response.set_cookie(key="email", value=email)
+    response.set_cookie(key="email", value=auth.get_jwt_token_from_email(email))
     return response
 
 
@@ -40,10 +35,19 @@ def get_retry_login_response():
 
 
 @app.post("/login")
-def post_login(email: str = Form(...), password: str = Form(...)):
+def post_login(
+    email: str = Form(...), password: str = Form(...), name: str = Form(...)
+):
     return (
         get_cookied_response(email, password)
-        if db.is_valid_user(email, password)
+        if auth.is_valid_user(
+            db.User(
+                id=-1,
+                email=email,
+                password=password,
+                name=name,
+            )
+        )
         else get_retry_login_response()
     )
 
@@ -79,9 +83,15 @@ def get_answer_vote(id: int, value: int):
     return db.get_answer(id).votes
 
 
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    return db.get_user_from_email(auth.get_email_from_jwt_token(token)).copy(
+        update={"password": ""}
+    )
+
+
 @app.get("/user")
-def get_user(email=Depends(get_current_user)):
-    return {"email": email}
+def get_user(user=Depends(get_current_user)):
+    return {"user": user}
 
 
 @app.post("/answer")

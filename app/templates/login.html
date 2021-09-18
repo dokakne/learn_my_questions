@@ -8,8 +8,15 @@
 >
   <h1 class="h3 mb-3 fw-normal">Please sign-in/sign-up</h1>
   <input
-    type="email"
+    type="name"
     class="form-control"
+    id="name"
+    name="name"
+    placeholder="Full Name"
+  />
+  <input
+    type="email"
+    class="mt-2 form-control"
     id="email"
     name="email"
     placeholder="name@example.com"
@@ -21,11 +28,23 @@
     name="password"
     placeholder="Password"
   />
-  <div class="mt-2 alert alert-danger" role="alert" display="block">
+  <div
+    class="mt-2 alert alert-danger"
+    role="alert"
+    style="display: none"
+    id="login_error"
+  >
     Incorrect username or password
   </div>
   <button class="mt-2 w-100 btn btn-lg btn-primary" type="submit">
     Sign in/up
   </button>
 </form>
+
+<script>
+  const login_error = document.getElementById("login_error");
+  if (document.documentURI.includes("error=True")) {
+    login_error.style.display = "block";
+  }
+</script>
 {% endblock %}
