@@ -6,7 +6,7 @@ function auth_guard(callback) {
       headers: { Authorization: `Bearer ${Cookies.get("email")}` },
     })
     .then((response) => {
-      if (response.data.user) {
+      if (response.data.user && response.data.user.email) {
         current_user = response.data.user;
         profile.innerHTML = current_user.name;
         callback();
