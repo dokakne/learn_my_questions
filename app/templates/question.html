@@ -1,0 +1,83 @@
+{% extends "template.html" %} {% block content %}
+<h2>{{ question.title}}</h2>
+<p>Asked by {{question.author}}</p>
+<div class="d-flex flex-row">
+  <div class="p-3">
+    <img
+      role="button"
+      onclick="question_vote(1)"
+      src="/static/images/caret-up-fill.svg"
+      alt="Bootstrap"
+      width="32"
+      height="32"
+    />
+    <div class="text-center" id="question_vote">{{ question.votes }}</div>
+    <img
+      role="button"
+      onclick="question_vote(-1)"
+      src="/static/images/caret-down-fill.svg"
+      alt="Bootstrap"
+      width="32"
+      height="32"
+    />
+  </div>
+  <div class="flex-grow-1">
+    <p class="card-text">{{question.detail | safe }}</p>
+    <p class="card-text">
+      {% for tag in question.tags %}
+      <span class="badge bg-dark">{{tag}}</span>
+      {% endfor %}
+    </p>
+  </div>
+</div>
+
+<h2 class="mt-5">Answers</h2>
+<div class="mt-5 mb-5 form">
+  <h4>
+    Your Answer
+    <button onclick="answer_submit()" type="button" class="btn btn-success">
+      Submit
+    </button>
+  </h4>
+  <textarea id="answer" class="form-control"></textarea>
+</div>
+{% for answer in answers %}
+<div class="d-flex flex-row">
+  <div class="ps-3 pe-3">
+    <img
+      role="button"
+      onclick="answer_vote({{answer.id}},1)"
+      src="/static/images/caret-up-fill.svg"
+      alt="Bootstrap"
+      width="32"
+      height="32"
+    />
+    <div class="text-center" id="answer_vote_{{answer.id}}">
+      {{ answer.votes }}
+    </div>
+    <img
+      role="button"
+      onclick="answer_vote({{answer.id}},-1)"
+      src="/static/images/caret-down-fill.svg"
+      alt="Bootstrap"
+      width="32"
+      height="32"
+    />
+  </div>
+  <div class="flex-grow-1">
+    {{answer.detail | safe}}
+    <div class="text-end"><small>Answered by {{answer.author}}</small></div>
+  </div>
+</div>
+<hr />
+{% endfor %}
+
+<script src="/static/js/tinymce/tinymce.min.js"></script>
+<script>
+  const question_id = {{ question.id }};
+  tinymce.init({
+      selector: '#answer', statusbar: false, menubar: false,
+  });
+</script>
+<script src="/static/js/question.js"></script>
+{% endblock %}

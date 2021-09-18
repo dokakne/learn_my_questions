@@ -31,21 +31,18 @@ SAMPLE_QUESTION = Question(
     title=SMALL_TEXT,
     detail=MEDIUM_TEXT,
     author="Nobody",
-    votes=100,
     tags=("tag", "tag", "tag"),
-    answers=100,
 )
 SAMPLE_ANSWER = Answer(
     id=0,
     question_id=1,
     detail=LARGE_TEXT,
     author="Nobody",
-    votes=10,
 )
 
 QUESTIONS = [
-    SAMPLE_QUESTION.copy(update={"id": 0}),
-    SAMPLE_QUESTION.copy(update={"id": 1}),
+    SAMPLE_QUESTION.copy(update={"id": 0, "votes": 100, "answers": 8}),
+    SAMPLE_QUESTION.copy(update={"id": 1, "votes": 90, "answers": 3}),
     SAMPLE_QUESTION.copy(update={"id": 2}),
 ]
 
@@ -64,8 +61,8 @@ ANSWERS = [
 ]
 
 
-def get_questions() -> list[Question]:
-    return QUESTIONS
+def get_questions(search: str) -> list[Question]:
+    return [question for question in QUESTIONS if search in question.title]
 
 
 def get_question(id: int) -> Question:
@@ -84,6 +81,23 @@ def set_question_vote(id: int, value: int) -> None:
 
 def get_answer(id: int) -> Answer:
     return next((answer for answer in ANSWERS if answer.id == id), EMPTY_ANSWER)
+
+
+def get_answer_id() -> int:
+    return ANSWERS[-1].id + 1 if ANSWERS else 0
+
+
+def get_question_id() -> int:
+    return QUESTIONS[-1].id + 1 if QUESTIONS else 0
+
+
+def set_answer(answer: Answer) -> None:
+    ANSWERS.append(answer.copy(update={"id": get_answer_id()}))
+    get_question(answer.question_id).answers += 1
+
+
+def set_question(question: Question) -> None:
+    QUESTIONS.append(question.copy(update={"id": get_question_id()}))
 
 
 def set_answer_vote(id: int, value: int) -> None:
