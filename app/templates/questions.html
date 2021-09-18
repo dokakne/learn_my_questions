@@ -51,12 +51,31 @@
 {% endfor %}
 
 <script src="/static/js/tinymce/tinymce.min.js"></script>
+
 <script>
-  tinymce.init({
-    selector: "#detail",
-    statusbar: false,
-    menubar: false,
-  });
+  axios
+    .get("/user", {
+      headers: { Authorization: `Bearer ${Cookies.get("email")}` },
+    })
+    .then((response) => {
+      if (response.data.email) {
+        set_user(response.data.email);
+        init();
+      } else {
+        window.location.href = "/login";
+      }
+    })
+    .catch((error) => {
+      window.location.href = "/login";
+    });
+
+  function init() {
+    tinymce.init({
+      selector: "#detail",
+      statusbar: false,
+      menubar: false,
+    });
+  }
   const elements = {
     title: document.getElementById("title"),
     tags: document.getElementById("tags"),
@@ -65,7 +84,7 @@
     axios
       .post("/question", {
         id: -1,
-        author: "Nobody",
+        author: display_email.innerHTML,
         detail: tinyMCE.get("detail").getContent(),
         tags: elements.tags.value.split(/\s+/),
         title: elements.title.value,

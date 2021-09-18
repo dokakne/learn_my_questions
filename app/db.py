@@ -19,13 +19,19 @@ class Answer(BaseModel):
     votes: int = 0
 
 
+class User(BaseModel):
+    id: int
+    email: str
+    password: str
+
+
 MEDIUM_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 LARGE_TEXT = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
 SMALL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
 
 EMPTY_QUESTION = Question(id=-1, title="", detail="", author="")
 EMPTY_ANSWER = Answer(id=-1, question_id=-1, detail="", author="")
-
+EMPTY_USER = User(id=-1, email="", password="")
 SAMPLE_QUESTION = Question(
     id=0,
     title=SMALL_TEXT,
@@ -40,6 +46,7 @@ SAMPLE_ANSWER = Answer(
     author="Nobody",
 )
 
+USERS = []
 QUESTIONS = [
     SAMPLE_QUESTION.copy(update={"id": 0, "votes": 100, "answers": 8}),
     SAMPLE_QUESTION.copy(update={"id": 1, "votes": 90, "answers": 3}),
@@ -91,6 +98,10 @@ def get_question_id() -> int:
     return QUESTIONS[-1].id + 1 if QUESTIONS else 0
 
 
+def get_user_id() -> int:
+    return USERS[-1].id + 1 if USERS else 0
+
+
 def set_answer(answer: Answer) -> None:
     ANSWERS.append(answer.copy(update={"id": get_answer_id()}))
     get_question(answer.question_id).answers += 1
@@ -102,3 +113,25 @@ def set_question(question: Question) -> None:
 
 def set_answer_vote(id: int, value: int) -> None:
     get_answer(id).votes += value
+
+
+def set_user(user: User):
+    USERS.append(user.copy(update={"id": get_user_id()}))
+
+
+def get_user_from_email(email: str) -> User:
+    return next((user for user in USERS if user.email == email), EMPTY_USER)
+
+
+def is_auth_user_password(email, password) -> bool:
+    return get_user_from_email(email).password == password
+
+
+def is_valid_user(email: str, password: str) -> None:
+    if is_auth_user_password(email, password):
+        return True
+    elif get_user_from_email(email).id == -1:
+        set_user(User(email=email, password=password, id=-1))
+        return True
+    else:
+        return False

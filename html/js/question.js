@@ -18,7 +18,7 @@ function answer_submit(answer) {
     .post("/answer", {
       id: -1,
       question_id: question_id,
-      author: "Nobody",
+      author: display_email.innerHTML,
       detail: tinyMCE.get("answer").getContent(),
     })
     .then((response) => {
