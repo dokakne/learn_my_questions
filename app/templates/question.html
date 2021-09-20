@@ -46,7 +46,7 @@
   <div class="ps-3 pe-3">
     <img
       role="button"
-      onclick="answer_vote({{answer.id}},1)"
+      onclick="answer_vote(+'{{answer.id}}',1)"
       src="/static/images/caret-up-fill.svg"
       alt="Bootstrap"
       width="32"
@@ -57,7 +57,7 @@
     </div>
     <img
       role="button"
-      onclick="answer_vote({{answer.id}},-1)"
+      onclick="answer_vote(+'{{answer.id}}',-1)"
       src="/static/images/caret-down-fill.svg"
       alt="Bootstrap"
       width="32"
@@ -76,12 +76,14 @@
 <script src="/static/js/auth_guard.js"></script>
 <script src="/static/js/question.js"></script>
 <script>
-  const question_id = {{ question.id }};
+  const question_id = +"{{ question.id }}";
 
   auth_guard(init);
-   function init() {
-      tinymce.init({
-      selector: '#answer', statusbar: false, menubar: false,
+  function init() {
+    tinymce.init({
+      selector: "#answer",
+      statusbar: false,
+      menubar: false,
     });
   }
 </script>
