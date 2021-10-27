@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from . import db, auth
+from . import db_sqlite as db, auth
 
 templates = Jinja2Templates(directory="app/templates")
 

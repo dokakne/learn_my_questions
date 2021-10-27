@@ -2,7 +2,8 @@ import os
 from sys import platform
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from . import db
+from . import db_sqlite as db
+
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -18,6 +19,7 @@ def is_auth_user_password(email, password) -> bool:
         return crypt_context.verify(password, db.get_user_from_email(email).password)
     except:
         return False
+
 
 def is_valid_user(user: db.User) -> None:
     if is_auth_user_password(user.email, user.password):

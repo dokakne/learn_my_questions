@@ -47,6 +47,7 @@ SAMPLE_ANSWER = Answer(
     author="Nobody",
 )
 
+
 USERS = []
 QUESTIONS = [
     SAMPLE_QUESTION.copy(update={"id": 0, "votes": 100, "answers": 8}),
